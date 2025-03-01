@@ -8,7 +8,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Install Dependencies') {
             steps {
                 sh 'pip install -r requirements.txt'
@@ -25,7 +25,7 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 1, unit: 'MINUTES') {
+                timeout(time: 5, unit: 'MINUTES') { // Increased timeout to avoid premature abortion
                     script {
                         def qg = waitForQualityGate()
                         if (qg.status != 'OK') {
