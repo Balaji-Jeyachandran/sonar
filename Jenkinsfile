@@ -25,12 +25,22 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 5, unit: 'MINUTES') { // Increased timeout to avoid premature abortion
-                    script {
-                        def qg = waitForQualityGate()
-                        if (qg.status != 'OK') {
-                            error "Pipeline failed due to quality gate failure: ${qg.status}"
-                        }
+                script {
+                    def sonarProjectKey = "python-security-scan"  
+                    def sonarUrl = "http://localhost:9000"
+                    def sonarToken = "sqp_6a94d44e333017c691170b184ddeb86116c7f0cc"
+
+                    def response = sh(
+                        script: """curl -s -u ${sonarToken}: ${sonarUrl}/api/qualitygates/project_status?projectKey=${sonarProjectKey}""",
+                        returnStdout: true
+                    ).trim()
+
+                    def status = new groovy.json.JsonSlurper().parseText(response).projectStatus.status
+
+                    if (status != 'OK') {
+                        error "Quality Gate failed with status: ${status}"
+                    } else {
+                        echo "Quality Gate passed!"
                     }
                 }
             }
