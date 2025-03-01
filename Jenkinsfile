@@ -9,21 +9,9 @@ pipeline {
             }
         }
         
-        stage('Setup Python Virtual Environment') {
-            steps {
-                sh '''
-                python3 -m venv venv
-                source venv/bin/activate
-                '''
-            }
-        }
-        
         stage('Install Dependencies') {
             steps {
-                sh '''
-                source venv/bin/activate
-                pip install -r requirements.txt
-                '''
+                sh 'pip install -r requirements.txt'
             }
         }
 
