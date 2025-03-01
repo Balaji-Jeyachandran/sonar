@@ -3,7 +3,10 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/Balaji-Jeyachandran/sonar.git'
+                script {
+                    git branch: 'main', url: 'https://github.com/Balaji-Jeyachandran/sonar.git'
+                    sh 'git fetch --all'
+                }
             }
         }
         stage('Install Dependencies') {
