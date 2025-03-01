@@ -5,23 +5,36 @@ pipeline {
             steps {
                 script {
                     git branch: 'main', url: 'https://github.com/Balaji-Jeyachandran/sonar.git'
-                    sh 'git fetch --all'
                 }
             }
         }
-        stage('Install Dependencies') {
+        
+        stage('Setup Python Virtual Environment') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh '''
+                python3 -m venv venv
+                source venv/bin/activate
+                '''
             }
         }
+        
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                source venv/bin/activate
+                pip install -r requirements.txt
+                '''
+            }
+        }
+
         stage('SonarQube Scan') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                sh '/opt/sonar-scanner/bin/sonar-scanner'
-        }
+                    sh '/opt/sonar-scanner/bin/sonar-scanner'
                 }
             }
         }
+
         stage('Quality Gate') {
             steps {
                 timeout(time: 1, unit: 'MINUTES') {
